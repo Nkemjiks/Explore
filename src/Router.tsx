@@ -1,17 +1,23 @@
-import * as React from 'react';
+import React, {  useReducer } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { reducer, initialState, ThemeContext } from './helpers/theme/ThemContext';
 import LandingPage from './components/LandingPage';
 
 interface Props {};
 
-const Router: React.SFC<Props>  = () => {
+const AppRouter: React.SFC<Props>  = () => {
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const value = { state, dispatch };
+
   return (
-    <Router>
-      <Switch>
-        <Route path="/" component={() => <LandingPage />}/>
-      </Switch>
-    </Router>
+    <ThemeContext.Provider value={value} >
+      <Router>
+        <Switch>
+          <Route path="/" component={() => <LandingPage theme={state.theme}/>}/>
+        </Switch>
+      </Router>
+    </ThemeContext.Provider>
   );
 }
 
-export default Router;
+export default AppRouter;

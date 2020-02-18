@@ -1,42 +1,47 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import Switch from 'react-switch';
-import { ThemeContext } from '../../helpers/theme/ThemContext';
 import mq from 'helpers/utils/mq';
-
-interface Props {
-  theme: any;
-};
+import Toggle from 'components/Toggle';
+import Search from 'components/SearchContainer';
 
 const Container = styled.div`
   background: ${props => props.theme.background};
   color: ${props => props.theme.text};
-  padding: 50px;
+  height: 100vh;
+  padding: 10px 30px;
+  box-sizing: border-box;
 
   ${mq.tablet`
-    padding: 70px;
   `}
 `
 
-const LandingPage: React.SFC<Props> = (props) => {
-  const { state, dispatch } = useContext(ThemeContext);
+const SubContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 60px;
 
-  const updateSwitchState = () => {
-    dispatch({type: 'toggleTheme'});
-  }
+  ${mq.tablet`
+    margin-top: 90px;
+  `}
+`
+const Logo = styled.h1`
+  font-size: 40px;
+
+  ${mq.tablet`
+    font-size: 50px;
+  `}
+`
+
+const LandingPage: React.SFC = (props: any) => {
 
   return(
-    <Container theme={state.theme}>
-      Dark mode
-      <Switch
-        checked={state.checked}
-        onChange={updateSwitchState}
-        uncheckedIcon={false}
-        checkedIcon={false}
-        handleDiameter={18}
-        height={20}
-        width={35}
-      />
+    <Container>
+      <Toggle />
+      <SubContainer>
+        <Logo>Explore</Logo>
+        <Search />
+      </SubContainer>
     </Container>
   );
 }

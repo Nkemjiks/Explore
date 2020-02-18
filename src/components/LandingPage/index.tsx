@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import styled from 'styled-components';
 import Switch from 'react-switch';
 import { ThemeContext } from '../../helpers/theme/ThemContext';
+import mq from 'helpers/utils/mq';
 
 interface Props {
   theme: any;
@@ -10,6 +11,11 @@ interface Props {
 const Container = styled.div`
   background: ${props => props.theme.background};
   color: ${props => props.theme.text};
+  padding: 50px;
+
+  ${mq.tablet`
+    padding: 70px;
+  `}
 `
 
 const LandingPage: React.SFC<Props> = (props) => {

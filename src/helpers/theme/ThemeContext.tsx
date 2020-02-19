@@ -49,14 +49,14 @@ export interface ITheme {
     darkModeText: string,
     line: string
   },
-  checked: boolean,
-  currentTheme: string,
+  checked: boolean
 }
 
+const userTheme = localStorage.getItem('theme');
+
 export const initialState: ITheme = {
-  theme: themes.dark,
-  checked: true,
-  currentTheme: 'dark'
+  theme: userTheme === 'dark' ? themes.dark : themes.light,
+  checked:  userTheme === 'dark' ? true : false
 };
 
 export type Action =
@@ -65,12 +65,11 @@ export type Action =
 export const reducer = (state: ITheme = initialState, action: Action) => {
   switch (action.type) {
     case 'toggleTheme':
-      localStorage.setItem('theme', state.currentTheme === 'dark' ? 'light' : 'dark')
+      localStorage.setItem('theme', !state.checked ? 'dark' : 'light')
       return {
         ...state,
         theme: state.theme === themes.dark ? themes.light : themes.dark,
-        checked: !state.checked,
-        currentTheme: state.currentTheme === 'dark' ? 'light' : 'dark'
+        checked: !state.checked
       };
       
     default:

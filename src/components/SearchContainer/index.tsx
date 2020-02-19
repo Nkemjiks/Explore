@@ -70,7 +70,7 @@ const SearchContainer: React.SFC = () => {
     <Container>
       <Search handleInputChange={handleInputChange} results={results} query={query} />
       <Button>
-        <img src={state.currentTheme === 'dark' ? lightSearch : darkSearch} alt="search" />
+        <img src={state.checked ? darkSearch : lightSearch} alt="search" />
       </Button>
     </Container>
   );

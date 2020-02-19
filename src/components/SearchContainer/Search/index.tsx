@@ -11,7 +11,6 @@ const Container = styled.div`
   `}
 
   ${mq.laptop`
-    width: 660px;
     margin-top: 60px;
   `}
 `

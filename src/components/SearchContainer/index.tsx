@@ -14,6 +14,10 @@ const Container = styled.div`
   ${mq.tablet`
     width: 70%;
   `}
+
+  ${mq.laptop`
+    width: 660px;
+  `}
 `
 
 const Button = styled.button`

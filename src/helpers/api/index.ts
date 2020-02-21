@@ -37,3 +37,8 @@ export async function getAutoComplete(query: string) {
   const res = await makeApiCall(`${paths.autoComplete}?text=${query}`, null, 'GET');
   return res;
 }
+
+export async function getWebSearchResult(query: string, pageNumber: number) {
+  const res = await makeApiCall(`${paths.webSearch}?text=${query}&pageNumber=${pageNumber}&pageSize=10&autoCorrect=true&safeSearch=false`, null, 'GET');
+  return res;
+}

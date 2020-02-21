@@ -13,6 +13,7 @@ const Header = styled.div`
   p {
     font-size: 15px;
     margin-right: 5px;
+    margin-top: 10px;
   }
 `
 

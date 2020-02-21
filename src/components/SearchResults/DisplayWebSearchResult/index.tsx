@@ -6,6 +6,9 @@ const Container = styled.a`
   margin-bottom: 20px;
   display: block;
   text-decoration: none;
+  :hover {
+    text-decoration: none;
+  }
 
   ${mq.tablet`
   `}
@@ -62,7 +65,9 @@ const DisplayWebSearchResult: React.SFC<Props> = ({ result }) => {
   }
   return(
     <Container href={result.url} target='blank'>
-      <Title>{result.title}</Title>
+      <Title dangerouslySetInnerHTML={{
+        __html: result.title
+      }}></Title>
       <DatePublished>{getDate(result.datePublished)}</DatePublished>
       <Body>{truncate(result.body)}</Body>
     </Container>

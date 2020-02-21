@@ -66,8 +66,8 @@ const SearchContainer: React.SFC<Props> = (props) => {
 
   useEffect(() => {
     const q = queryString.parse(location);
-    if (q.query !== undefined) {
-      setQuery(q.query as string);
+    if (q.q !== undefined) {
+      setQuery(q.q as string);
     }
     if(props.autocompleteOff) {
       setAutoComplete(true);

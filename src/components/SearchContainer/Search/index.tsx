@@ -41,6 +41,8 @@ const AutoCompleteContainer = styled.div`
     cursor: pointer;
     padding: 3px;
     text-decoration: none;
+    color: ${props => props.theme.text};
+
     :hover {
       background-color: #a5a5a5;
       border-radius: 3px;

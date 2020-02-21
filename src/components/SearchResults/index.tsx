@@ -6,7 +6,7 @@ import queryString from 'query-string';
 import mq from 'helpers/utils/mq';
 import Toggle from 'components/Toggle';
 import Search from 'components/SearchContainer';
-import { getWebSearchResult } from 'helpers/api';
+import { getWebSearchResult, getNewSearchResult } from 'helpers/api';
 import DisplayWebSearchResult from './DisplayWebSearchResult';
 import loadingImg from './assets/810.gif';
 
@@ -38,7 +38,7 @@ const SubContainer = styled.div`
   `}
 
   ${mq.laptop`
-    width: 1000px;
+    width: 1100px;
     flex-direction: row;
     margin-right: auto;
     margin-left: auto;
@@ -73,7 +73,7 @@ const SearchResult = styled.div`
   `}
 
   ${mq.laptop`
-    width: 1000px;
+    width: 830px;
   `}
 `
 
@@ -86,38 +86,111 @@ const PaginationContainer = styled.div`
     margin-right: auto;
   `}
   ${mq.laptop`
-    width: 1000px;
+    width: 830px;
   `}
+`
+
+const RelatedSearchContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  font-size: 12px;
+  flex-wrap: wrap;
+
+  ${mq.tablet`
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+  `}
+  ${mq.laptop`
+    width: 830px;
+  `}
+
+  a {
+    display: block;
+    cursor: pointer;
+    display: block;
+    cursor: pointer;
+    padding: 3px;
+    text-decoration: none;
+    color: ${props => props.theme.relatedSearch};
+    margin-right: 5px;
+
+    :hover {
+      border-radius: 3px;
+      padding: 6px;
+      color: ${props => props.theme.relatedSearch};
+    }
+  }
+`
+
+interface ButtonProp {
+  active: boolean;
+}
+
+const Button = styled.button<ButtonProp>`
+  background: ${props => props.active ? props.theme.button : "transparent"};
+  color: ${props => props.active ? props.theme.searchCriteria : props.theme.text};
+  padding: ${props => props.active ? '8px 15px' : "0"};
+  border: 0;
+  border-radius: 20px;
+  margin-right: 15px;
 `
 
 const SearchResults: React.SFC = () => {
   const location = useLocation().search;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [searchResult, setSearchResult] = useState([])
+  const [searchResult, setSearchResult] = useState([]);
   const [activePage, setActivePage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [pageCount, setPageCount] = useState(0);
+  const [search, setSearch] = useState('web');
+  const [relatedSearch, setRelatedSearch] = useState([]);
 
-  const fetchAutoComplete = async (query: string, page: number) => {
-    const result = await getWebSearchResult(query, page);
+  const fetchSearchResult = async (query: string, page: number) => {
+    let result;
+    switch(search) {
+      case 'web':
+        result = await getWebSearchResult(query, page);
+        break;
+      case 'news':
+        result = await getNewSearchResult(query, page)
+        break;
+      default:
+        result = await getWebSearchResult(query, page)
+    }
+    ;
     setSearchResult(result.value);
+    setRelatedSearch(result.relatedSearch);
     setLoading(false);
     setPageCount(result.totalCount)
     console.log(result);
   }
 
+  const getQueryParams = () => queryString.parse(location).q;
+
+  const handleClick = async(event: React.MouseEvent<HTMLButtonElement>) => {
+    setSearch(event.currentTarget.title);
+  }
+
   useEffect(() => {
-    const q = queryString.parse(location);
-    fetchAutoComplete(q.q as string, 1);
+    fetchSearchResult(getQueryParams() as string, 1);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    fetchSearchResult(getQueryParams() as string, 1);
+    setSearchResult([]);
+    setRelatedSearch([]);
+    setLoading(true);
+    setActivePage(1);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
+
   const handlePageChange = (e: number) => {
-    const q = queryString.parse(location);
     setActivePage(e);
     setLoading(true);
     setSearchResult([]);
-    fetchAutoComplete(q.q as string, e);
+    setRelatedSearch([]);
+    fetchSearchResult(getQueryParams() as string, e);
   }
 
   return(
@@ -130,11 +203,27 @@ const SearchResults: React.SFC = () => {
       { loading && (<img className="loading" src={loadingImg} alt='loading' />)}
       <SearchResult>
         {
+          searchResult.length > 0 && (
+            <div>
+              <Button title='web' onClick={handleClick} active={search === 'web' ? true : false}>Web</Button>
+              <Button title='news' onClick={handleClick} active={search === 'news' ? true : false}>News</Button>
+              <Button title='image' onClick={handleClick} active={search === 'image' ? true : false}>image</Button>
+            </div>
+          )
+        } 
+        {
           searchResult.length > 0 && searchResult.map((result, i) => {
             return ( <DisplayWebSearchResult key={i} result={result}/> )
           })
         }
       </SearchResult>
+      <RelatedSearchContainer>
+        { relatedSearch.length > 0 && relatedSearch.map((result, i) => (
+          <a dangerouslySetInnerHTML={{
+            __html: result
+          }}href={`/search?q=${result}`} key={i}></a>
+        )) }
+      </RelatedSearchContainer>
       {
         searchResult.length > 0 && (
           <PaginationContainer>

@@ -10,6 +10,8 @@ const grayShade4 = "#616161";
 const pinkShade1 = "#C2185B";
 const pinkShade3 = "#F48FB1";
 const blue = "#03A9F4";
+const grey ="#a5a5a5";
+const grey2 = '#5a5a5a';
 
 export const themes = {
   light: {
@@ -21,7 +23,9 @@ export const themes = {
     text: black,
     link: blue,
     darkModeText: pinkShade1,
-    line: grayShade3
+    line: grayShade3,
+    searchCriteria: white,
+    relatedSearch: grey2
   },
 
   dark: {
@@ -33,7 +37,9 @@ export const themes = {
     text: white,
     link: pinkShade3,
     darkModeText: pinkShade3,
-    line: grayShade3
+    line: grayShade3,
+    searchCriteria: black,
+    relatedSearch: grey
   }
 }
 
@@ -47,7 +53,9 @@ export interface ITheme {
     text: string,
     link: string,
     darkModeText: string,
-    line: string
+    line: string,
+    searchCriteria: string,
+    relatedSearch: string
   },
   checked: boolean
 }

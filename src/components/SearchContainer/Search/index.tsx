@@ -72,7 +72,7 @@ const SearchContainer: React.SFC<Props> = ({ handleInputChange, results, query, 
         !autocompleteOff && results.length > 0 && query.length > 0 && (
           <AutoCompleteContainer>
             { results.map((result, i) => (
-              <a href={`/search?query=${result}`} key={i}>{result}</a>
+              <a href={`/search?q=${result}`} key={i}>{result}</a>
             )) }
           </AutoCompleteContainer>
         )

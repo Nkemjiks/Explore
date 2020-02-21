@@ -108,7 +108,7 @@ const SearchResults: React.SFC = () => {
 
   useEffect(() => {
     const q = queryString.parse(location);
-    fetchAutoComplete(q.query as string, 1);
+    fetchAutoComplete(q.q as string, 1);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -117,7 +117,7 @@ const SearchResults: React.SFC = () => {
     setActivePage(e);
     setLoading(true);
     setSearchResult([]);
-    fetchAutoComplete(q.query as string, e);
+    fetchAutoComplete(q.q as string, e);
   }
 
   return(

@@ -93,7 +93,7 @@ const SearchContainer: React.SFC<Props> = (props) => {
         results={results}
         query={query}
       />
-      <Button href={`/search?query=${query}`} >
+      <Button href={`/search?q=${query}`} >
         <img src={state.checked ? darkSearch : lightSearch} alt="search" />
       </Button>
     </Container>

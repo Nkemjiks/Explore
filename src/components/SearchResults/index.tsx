@@ -97,7 +97,7 @@ const SearchResults: React.SFC = () => {
   const [activePage, setActivePage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [pageCount, setPageCount] = useState(0);
-  const [searchType, setSearchType] = useState('image');
+  const [searchType, setSearchType] = useState('web');
   const [relatedSearch, setRelatedSearch] = useState([]);
   const [searchComplete, setSearchComplete] = useState(false);
 

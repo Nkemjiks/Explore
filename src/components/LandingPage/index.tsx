@@ -27,6 +27,7 @@ const SubContainer = styled.div`
 `
 const Logo = styled.h1`
   font-size: 40px;
+  margin-bottom: 40px;
 
   ${mq.tablet`
     font-size: 50px;

@@ -1,24 +1,15 @@
 import React from 'react';
 import styled from 'styled-components';
-import mq from 'helpers/utils/mq';
 
 const Container = styled.div`
   width: 100%;
   position: relative;
-
-  ${mq.tablet`
-    margin-top: 60px;
-  `}
-
-  ${mq.laptop`
-    margin-top: 60px;
-  `}
 `
 
 const Search = styled.input.attrs({type: "text"})`
   width: 100%;
   height: 52px;
-  margin-top: 30px;
+  margin-top: 10px;
   background-color: ${props => props.theme.search};
   border: 0;
   padding: 0 10px;
@@ -50,33 +41,41 @@ const AutoCompleteContainer = styled.div`
     cursor: pointer;
     padding: 3px;
     text-decoration: none;
+    color: ${props => props.theme.text};
+
     :hover {
       background-color: #a5a5a5;
       border-radius: 3px;
       padding: 6px;
       color: ${props => props.theme.body};
     }
-    :focus, :visited {
+    :focus {
       color: ${props => props.theme.body};
+    }
+    :visited {
+      color: ${props => props.theme.grayShade4};
     }
   }
 `
 
 interface Props {
-  handleInputChange: (event: any) => void,
-  results: string[],
-  query: string
+  handleInputChange: (event: any) => void;
+  results: string[];
+  query: string;
+  autocompleteOff?: boolean;
 }
 
-const SearchContainer: React.SFC<Props> = ({ handleInputChange, results, query }) => {
+const SearchContainer: React.SFC<Props> = ({ handleInputChange, results, query, autocompleteOff = false }) => {
 
   return( 
     <Container>
-      <Search placeholder="Search for" onChange={handleInputChange} />
+      <Search placeholder="Search for" defaultValue={query} onChange={handleInputChange} />
       {
-        results.length > 0 && query.length > 0 && (
+        !autocompleteOff && results.length > 0 && query.length > 0 && (
           <AutoCompleteContainer>
-            { results.map((result, i) => (<a href="#"key={i}>{result}</a>)) }
+            { results.map((result, i) => (
+              <a href={`/search?q=${result}`} key={i}>{result}</a>
+            )) }
           </AutoCompleteContainer>
         )
       }

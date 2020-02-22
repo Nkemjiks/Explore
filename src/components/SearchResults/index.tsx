@@ -102,7 +102,6 @@ const SearchResults: React.SFC = () => {
   const [searchComplete, setSearchComplete] = useState(false);
 
   const fetchSearchResult = async (query: string, page: number) => {
-    console.log(navigator.onLine);
     if(navigator.onLine) { 
       let result;
       switch(searchType) {
@@ -126,7 +125,6 @@ const SearchResults: React.SFC = () => {
         setSearchResult(result.value);
         setLoading(false);
         setPageCount(result.totalCount)
-        console.log(result);
       }
     } else {
       setLoading(false);
@@ -137,6 +135,7 @@ const SearchResults: React.SFC = () => {
   const getQueryParams = () => queryString.parse(location).q;
 
   const handleClick = async(event: React.MouseEvent<HTMLButtonElement>) => {
+    setSearchResult([]);
     setSearchType(event.currentTarget.title);
   }
 
@@ -146,12 +145,11 @@ const SearchResults: React.SFC = () => {
   }, []);
 
   useEffect(() => {
-    fetchSearchResult(getQueryParams() as string, 1);
     setSearchComplete(false);
-    setSearchResult([]);
     setRelatedSearch([]);
     setLoading(true);
     setActivePage(1);
+    fetchSearchResult(getQueryParams() as string, 1);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchType]);
 

@@ -45,7 +45,7 @@ interface Props {
   result: Result
 }
 
-const DisplayWebSearchResult: React.SFC<Props> = ({ result }) => {
+const DisplayResult: React.SFC<Props> = ({ result }) => {
 
   const truncate = (body: string) => {
     if(body.length > 200) {
@@ -74,4 +74,4 @@ const DisplayWebSearchResult: React.SFC<Props> = ({ result }) => {
   );
 }
 
-export default DisplayWebSearchResult;
+export default DisplayResult;

@@ -1,7 +1,8 @@
 const paths = {
   autoComplete: 'spelling/AutoComplete',
   webSearch: 'Search/WebSearchAPI',
-  newSearch: 'Search/NewsSearchAPI'
+  newSearch: 'Search/NewsSearchAPI',
+  imageSearch: 'Search/ImageSearchAPI'
 };
 
 export async function makeApiCall(path: any, body: any, method: any) {
@@ -29,6 +30,7 @@ export async function makeApiCall(path: any, body: any, method: any) {
     return res;
   } catch (error) {
     console.error(error);
+    return error;
   }
 }
 
@@ -44,5 +46,10 @@ export async function getWebSearchResult(query: string, pageNumber: number) {
 
 export async function getNewSearchResult(query: string, pageNumber: number) {
   const res = await makeApiCall(`${paths.newSearch}?q=${query}&pageNumber=${pageNumber}&pageSize=10&autoCorrect=true&safeSearch=false`, null, 'GET');
+  return res;
+}
+
+export async function getImageSearchResult(query: string, pageNumber: number) {
+  const res = await makeApiCall(`${paths.imageSearch}?q=${query}&pageNumber=${pageNumber}&pageSize=10&autoCorrect=true&safeSearch=false`, null, 'GET');
   return res;
 }

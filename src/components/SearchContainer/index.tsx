@@ -11,14 +11,25 @@ import { getAutoComplete } from 'helpers/api';
 
 const Container = styled.div`
   display: flex;
+  flex-direction: column;
   width: 100%;
 
   ${mq.tablet`
     width: 80%;
   `}
+  
   ${mq.laptop`
-    flex-grow: 9
+    width: 76.5%;
   `}
+`
+
+const SubContainer = styled.div`
+  display: flex;
+`
+
+const Notification = styled.div`
+color: ${props => props.theme.text};
+  padding: 20px 0;
 `
 
 const Button = styled.a`
@@ -52,13 +63,18 @@ const SearchContainer: React.SFC<Props> = (props) => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [autoComplete, setAutoComplete] = useState(false);
+  const [isInternet, setIsInternet] = useState(true);
 
   const fetchAutoComplete = async () => {
-    const result = await getAutoComplete(query);
-    if (query.length !== 0) {
-      setResults(result);
+    if(navigator.onLine) { 
+      const result = await getAutoComplete(query);
+      if (query.length !== 0) {
+        setResults(result);
+      } else {
+        setResults([]);
+      }
     } else {
-      setResults([]);
+      setIsInternet(false);
     }
   }
 
@@ -87,15 +103,22 @@ const SearchContainer: React.SFC<Props> = (props) => {
 
   return( 
     <Container>
-      <Search
-        autocompleteOff={autoComplete}
-        handleInputChange={handleInputChange}
-        results={results}
-        query={query}
-      />
-      <Button href={`/search?q=${query}`} >
-        <img src={state.checked ? darkSearch : lightSearch} alt="search" />
-      </Button>
+      <SubContainer>
+        <Search
+          autocompleteOff={autoComplete}
+          handleInputChange={handleInputChange}
+          results={results}
+          query={query}
+        />
+        <Button href={`/search?q=${query}`} >
+          <img src={state.checked ? darkSearch : lightSearch} alt="search" />
+        </Button>
+      </SubContainer>
+      {
+        !isInternet && (
+          <Notification>No internet connection</Notification>
+        )
+      }
     </Container>
   );
 }

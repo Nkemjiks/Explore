@@ -6,9 +6,11 @@ import queryString from 'query-string';
 import mq from 'helpers/utils/mq';
 import Toggle from 'components/Toggle';
 import Search from 'components/SearchContainer';
-import { getWebSearchResult, getNewSearchResult } from 'helpers/api';
-import DisplayWebSearchResult from './DisplayWebSearchResult';
+import { getWebSearchResult, getNewSearchResult, getImageSearchResult } from 'helpers/api';
 import loadingImg from './assets/810.gif';
+import RelatedSearch from './RelatedSearchContainer';
+import SearchSelect from './SearchSelect';
+import DisplaySearchResult from './DisplaySearchResult';
 
 const Container = styled.div`
   background: ${props => props.theme.background};
@@ -58,7 +60,6 @@ const Logo = styled.h1`
   ${mq.laptop`
     font-size: 30px;
     margin-right: 10px;
-    flex-grow: 1;
   `}
 `
 
@@ -90,85 +91,53 @@ const PaginationContainer = styled.div`
   `}
 `
 
-const RelatedSearchContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  font-size: 12px;
-  flex-wrap: wrap;
-
-  ${mq.tablet`
-    width: 80%;
-    margin-left: auto;
-    margin-right: auto;
-  `}
-  ${mq.laptop`
-    width: 830px;
-  `}
-
-  a {
-    display: block;
-    cursor: pointer;
-    display: block;
-    cursor: pointer;
-    padding: 3px;
-    text-decoration: none;
-    color: ${props => props.theme.relatedSearch};
-    margin-right: 5px;
-
-    :hover {
-      border-radius: 3px;
-      padding: 6px;
-      color: ${props => props.theme.relatedSearch};
-    }
-  }
-`
-
-interface ButtonProp {
-  active: boolean;
-}
-
-const Button = styled.button<ButtonProp>`
-  background: ${props => props.active ? props.theme.button : "transparent"};
-  color: ${props => props.active ? props.theme.searchCriteria : props.theme.text};
-  padding: ${props => props.active ? '8px 15px' : "0"};
-  border: 0;
-  border-radius: 20px;
-  margin-right: 15px;
-`
-
 const SearchResults: React.SFC = () => {
   const location = useLocation().search;
   const [searchResult, setSearchResult] = useState([]);
   const [activePage, setActivePage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [pageCount, setPageCount] = useState(0);
-  const [search, setSearch] = useState('web');
+  const [searchType, setSearchType] = useState('image');
   const [relatedSearch, setRelatedSearch] = useState([]);
+  const [searchComplete, setSearchComplete] = useState(false);
 
   const fetchSearchResult = async (query: string, page: number) => {
-    let result;
-    switch(search) {
-      case 'web':
-        result = await getWebSearchResult(query, page);
-        break;
-      case 'news':
-        result = await getNewSearchResult(query, page)
-        break;
-      default:
-        result = await getWebSearchResult(query, page)
+    console.log(navigator.onLine);
+    if(navigator.onLine) { 
+      let result;
+      switch(searchType) {
+        case 'web':
+          result = await getWebSearchResult(query, page);
+          setRelatedSearch(result.relatedSearch);
+          break;
+        case 'news':
+          result = await getNewSearchResult(query, page)
+          setRelatedSearch(result.relatedSearch);
+          break;
+        case 'image':
+          result = await getImageSearchResult(query, page)
+          setRelatedSearch([]);
+          break;
+        default:
+          result = await getWebSearchResult(query, page)
+      }
+      if(result.value.length > 0) {
+        setSearchComplete(true);
+        setSearchResult(result.value);
+        setLoading(false);
+        setPageCount(result.totalCount)
+        console.log(result);
+      }
+    } else {
+      setLoading(false);
+      setSearchComplete(false);
     }
-    ;
-    setSearchResult(result.value);
-    setRelatedSearch(result.relatedSearch);
-    setLoading(false);
-    setPageCount(result.totalCount)
-    console.log(result);
   }
 
   const getQueryParams = () => queryString.parse(location).q;
 
   const handleClick = async(event: React.MouseEvent<HTMLButtonElement>) => {
-    setSearch(event.currentTarget.title);
+    setSearchType(event.currentTarget.title);
   }
 
   useEffect(() => {
@@ -178,12 +147,13 @@ const SearchResults: React.SFC = () => {
 
   useEffect(() => {
     fetchSearchResult(getQueryParams() as string, 1);
+    setSearchComplete(false);
     setSearchResult([]);
     setRelatedSearch([]);
     setLoading(true);
     setActivePage(1);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search]);
+  }, [searchType]);
 
   const handlePageChange = (e: number) => {
     setActivePage(e);
@@ -191,6 +161,7 @@ const SearchResults: React.SFC = () => {
     setSearchResult([]);
     setRelatedSearch([]);
     fetchSearchResult(getQueryParams() as string, e);
+    setSearchComplete(false);
   }
 
   return(
@@ -203,27 +174,20 @@ const SearchResults: React.SFC = () => {
       { loading && (<img className="loading" src={loadingImg} alt='loading' />)}
       <SearchResult>
         {
-          searchResult.length > 0 && (
-            <div>
-              <Button title='web' onClick={handleClick} active={search === 'web' ? true : false}>Web</Button>
-              <Button title='news' onClick={handleClick} active={search === 'news' ? true : false}>News</Button>
-              <Button title='image' onClick={handleClick} active={search === 'image' ? true : false}>image</Button>
-            </div>
+          searchComplete && searchResult.length > 0 && (
+            <>
+              <SearchSelect search={searchType} handleClick={handleClick} searchResult={searchResult} />
+              <DisplaySearchResult searchResult={searchResult} searchType={searchType} />
+            </>
           )
-        } 
+        }
         {
-          searchResult.length > 0 && searchResult.map((result, i) => {
-            return ( <DisplayWebSearchResult key={i} result={result}/> )
-          })
+          searchComplete && searchResult.length === 0 && (
+            <div>No search result returned. Try searching for something else</div>
+          )
         }
       </SearchResult>
-      <RelatedSearchContainer>
-        { relatedSearch.length > 0 && relatedSearch.map((result, i) => (
-          <a dangerouslySetInnerHTML={{
-            __html: result
-          }}href={`/search?q=${result}`} key={i}></a>
-        )) }
-      </RelatedSearchContainer>
+      <RelatedSearch relatedSearch={relatedSearch} />
       {
         searchResult.length > 0 && (
           <PaginationContainer>
